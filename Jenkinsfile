@@ -4,9 +4,12 @@ pipeline {
     stages {
         stage('Status') {
             steps {
-                sh 'pwd'
-                sh 'which liquibase'
                 sh 'liquibase status'
+            }
+        }
+        stage('Check SQL') {
+            steps {
+                sh 'liquibase update-sql'
             }
         }
     }
