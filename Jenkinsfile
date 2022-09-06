@@ -46,5 +46,10 @@ pipeline {
                 sh 'liquibase rollback ' + params.rollback_to_tag
             }
         }
+        stage('Diff against prod') {
+            steps {
+                sh 'liquibase diff'
+            }
+        }
     }
 }
