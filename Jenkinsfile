@@ -1,7 +1,7 @@
 pipeline {
 
     parameters {
-        string(name: 'rollback-to-tag', defaultValue: '', description: 'Specify the tag to rollback to')
+        string(name: 'rollback_to_tag', defaultValue: '', description: 'Specify the tag to rollback to')
     }
 
     agent {label 'mac'}
@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Check SQL') {
             when {
-                expression { null == params.rollback_to_tag }
+                expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase update-sql'
@@ -31,7 +31,7 @@ pipeline {
         }
         stage('Deploy changetsets') {
             when {
-                expression { null == params.rollback_to_tag }
+                expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase update'
@@ -39,7 +39,7 @@ pipeline {
         }
         stage('Rollback to tag') {
             when {
-                expression { null != params.rollback_to_tag }
+                expression { !params.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase rollback ${params.rollback_to_tag}'
