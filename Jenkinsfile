@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Check SQL') {
             when {
-                expression { null == parameters.rollback_to_tag }
+                expression { parameters.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase update-sql'
@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Deploy changetsets') {
             when {
-                expression { null == parameters.rollback_to_tag }
+                expression { parameters.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase update'
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Rollback to tag') {
             when {
-                expression { null != parameters.rollback_to_tag }
+                expression { !parameters.rollback_to_tag.isEmpty() }
             }
             steps {
                 sh 'liquibase rollback ${params.rollback_to_tag}'
