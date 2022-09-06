@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Check input parameters') {
             steps {
-                params.each {param ->
+                parameters.each {param ->
                     println "${param.key} -> ${param.value} "
                 }
             }
@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Check SQL') {
             when {
-                expression { null == params.rollback_to_tag }
+                expression { null == parameters.rollback_to_tag }
             }
             steps {
                 sh 'liquibase update-sql'
@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Deploy changetsets') {
             when {
-                expression { null == params.rollback_to_tag }
+                expression { null == parameters.rollback_to_tag }
             }
             steps {
                 sh 'liquibase update'
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Rollback to tag') {
             when {
-                expression { null != params.rollback_to_tag }
+                expression { null != parameters.rollback_to_tag }
             }
             steps {
                 sh 'liquibase rollback ${params.rollback_to_tag}'
