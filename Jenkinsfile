@@ -42,7 +42,7 @@ pipeline {
                 expression { !params.rollback_to_tag.isEmpty() }
             }
             steps {
-                sh 'liquibase rollback ${params.rollback_to_tag}'
+                sh 'liquibase rollback $params.rollback_to_tag'
             }
         }
     }
