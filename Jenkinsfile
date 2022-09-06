@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     params.each { param ->
-                        echo "${param.key} -> ${param.value} "
+                        echo "${param.key} -> ${param.value}"
                     }
                 }
             }
@@ -42,6 +42,7 @@ pipeline {
                 expression { !params.rollback_to_tag.isEmpty() }
             }
             steps {
+                echo 'Trying to rollback to $params.rollback_to_tag tag'
                 sh 'liquibase rollback $params.rollback_to_tag'
             }
         }
