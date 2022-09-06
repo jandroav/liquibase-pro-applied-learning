@@ -8,12 +8,17 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
-    <changeSet id="1" author="Liquibase">
-    <createTable tableName="test_table">
-           <column name="test_id" type="int">
-                 <constraints primaryKey="true"/>
-           </column>
-           <column name="test_column" type="varchar"/>
-    </createTable>
+
+    <changeSet author="jandro" id="1">  
+        <tagDatabase tag="version_0.1"/>  
+    </changeSet>
+
+    <changeSet id="1" author="jandro">
+        <createTable tableName="test_table">
+            <column name="test_id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="test_column" type="varchar"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
