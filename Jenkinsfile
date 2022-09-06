@@ -9,8 +9,10 @@ pipeline {
     stages {
         stage('Check input parameters') {
             steps {
-                parameters.each {param ->
-                    println "${param.key} -> ${param.value} "
+                script {
+                    parameters.each { param ->
+                        println "${param.key} -> ${param.value} "
+                    }
                 }
             }
         }
