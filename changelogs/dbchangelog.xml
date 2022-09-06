@@ -13,7 +13,7 @@
         <tagDatabase tag="version_0.1"/>  
     </changeSet>
 
-    <changeSet id="1" author="jandro">
+    <changeSet author="jandro" id="2">
         <createTable tableName="test_table">
             <column name="test_id" type="int">
                 <constraints primaryKey="true"/>
