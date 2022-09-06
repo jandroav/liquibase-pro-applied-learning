@@ -14,11 +14,11 @@
     </changeSet>
 
     <changeSet author="jandro" id="2">
-        <createTable tableName="test_table">
-            <column name="test_id" type="int">
+        <createTable tableName="stuff">
+            <column name="stuff_id" type="int">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="test_column" type="varchar"/>
+            <column name="stuff_name" type="varchar"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
