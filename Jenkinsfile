@@ -7,6 +7,13 @@ pipeline {
     agent {label 'mac'}
 
     stages {
+        stage('Check input parameters') {
+            steps {
+                params.each {param ->
+                    println "${param.key} -> ${param.value} "
+                }
+            }
+        }
         stage('Status') {
             steps {
                 sh 'liquibase status'
