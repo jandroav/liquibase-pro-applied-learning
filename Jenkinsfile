@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     parameters.each { param ->
-                        println "${param.key} -> ${param.value} "
+                        echo "${param.key} -> ${param.value} "
                     }
                 }
             }
