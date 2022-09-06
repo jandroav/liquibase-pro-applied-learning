@@ -48,7 +48,8 @@ pipeline {
         }
         stage('Diff against prod') {
             steps {
-                sh 'liquibase --changelog-file=prod_diff.xml diff'
+                sh 'liquibase diff'
+                sh 'liquibase --changelog-file=prod_diff.xml diff-changelog'
                 archiveArtifacts artifacts: 'prod_diff.xml', fingerprint: true
             }
         }
