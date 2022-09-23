@@ -5,7 +5,8 @@ pipeline {
     }
 
     environment {
-        POSTGRESQL_STORE_CREDS = credentials('postgresql-store')
+        POSTGRESQL_STORE_CREDS = credentials('aws-enterprisedb')
+        POSTGRESQL_URL = env.POSTGRESQL_URL
     }
 
     agent {label 'linux'}
@@ -22,7 +23,7 @@ pipeline {
         }
         stage('Status') {
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' status'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' status'
             }
         }
         stage('Check SQL') {
@@ -30,7 +31,7 @@ pipeline {
                 expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' update-sql'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' update-sql'
             }
         }
         stage('Deploy changetsets') {
@@ -38,7 +39,7 @@ pipeline {
                 expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off update'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off update'
             }
         }
         stage('Rollback to tag') {
@@ -47,13 +48,13 @@ pipeline {
             }
             steps {
                 echo 'Trying to rollback to ' + params.rollback_to_tag + ' tag'
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off rollback ' + params.rollback_to_tag
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off rollback ' + params.rollback_to_tag
             }
         }
         stage('Diff against prod') {
             steps {
-                sh 'liquibase --changelog-file=prod_diff.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=jdbc:postgresql://localhost:5432/store_prod diff'
-                sh 'liquibase --changelog-file=prod_diff.xml --url=jdbc:postgresql://localhost:5432/Store --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=jdbc:postgresql://localhost:5432/store_prod diff-changelog'
+                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' diff'
+                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' diff-changelog'
                 archiveArtifacts artifacts: 'prod_diff.xml', fingerprint: true
             }
         }
