@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Status') {
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' status --log-level=FINE'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --liquibase-schema-name=public status'
             }
         }
         stage('Check SQL') {
@@ -32,7 +32,7 @@ pipeline {
                 expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' update-sql'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --liquibase-schema-name=public update-sql'
             }
         }
         stage('Deploy changetsets') {
@@ -40,7 +40,7 @@ pipeline {
                 expression { params.rollback_to_tag.isEmpty() }
             }
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off update'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --liquibase-schema-name=public --hub-mode=off update'
             }
         }
         stage('Rollback to tag') {
@@ -49,13 +49,13 @@ pipeline {
             }
             steps {
                 echo 'Trying to rollback to ' + params.rollback_to_tag + ' tag'
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --hub-mode=off rollback ' + params.rollback_to_tag
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --liquibase-schema-name=public --hub-mode=off rollback ' + params.rollback_to_tag
             }
         }
         stage('Diff against prod') {
             steps {
-                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' diff'
-                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' diff-changelog'
+                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' --liquibase-schema-name=public diff'
+                sh 'liquibase --changelog-file=prod_diff.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUsername=' + POSTGRESQL_STORE_CREDS_USR + ' --referencePassword=' + POSTGRESQL_STORE_CREDS_PSW + ' --referenceUrl=' + POSTGRESQL_REF_URL + ' --liquibase-schema-name=public diff-changelog'
                 archiveArtifacts artifacts: 'prod_diff.xml', fingerprint: true
             }
         }
