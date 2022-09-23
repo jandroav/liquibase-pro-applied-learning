@@ -6,8 +6,8 @@ pipeline {
 
     environment {
         POSTGRESQL_STORE_CREDS = credentials('aws-enterprisedb')
-        POSTGRESQL_URL = '${env.POSTGRESQL_URL}'
-        POSTGRESQL_REF_URL = '${env.POSTGRESQL_REF_URL}'
+        POSTGRESQL_URL = "${env.POSTGRESQL_URL}"
+        POSTGRESQL_REF_URL = "${env.POSTGRESQL_REF_URL}"
     }
 
     agent {label 'linux'}
