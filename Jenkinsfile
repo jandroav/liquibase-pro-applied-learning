@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Status') {
             steps {
-                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' status'
+                sh 'liquibase --changelog-file=./changelogs/dbchangelog.xml --url=' + POSTGRESQL_URL + ' --username=' + POSTGRESQL_STORE_CREDS_USR + ' --password=' + POSTGRESQL_STORE_CREDS_PSW + ' status --log-level=FINE'
             }
         }
         stage('Check SQL') {
