@@ -8,7 +8,7 @@ pipeline {
         POSTGRESQL_STORE_CREDS = credentials('postgresql-store')
     }
 
-    agent {label 'mac'}
+    agent {label 'linux'}
 
     stages {
         stage('Check input parameters') {
